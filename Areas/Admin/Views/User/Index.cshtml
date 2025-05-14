@@ -1,0 +1,107 @@
+﻿@model UserViewModel
+@{
+	ViewData["Title"] = "Manage Users";
+}
+
+<h4 class="mb-4">Manage Users</h4>
+<hr />
+<h5 class="mt-2"><a class="btn btn-outline-success" asp-action="Register" asp-area="Identity" asp-controller="Account">Add a user</a></h5>
+<table class="table table-bordered table-striped table-sm">
+	<thead>
+		<tr>
+			<th>Username</th>
+			<th>Role</th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@if (!Model.Users.Any())
+		{
+			<tr><td colspan="5">There are no user accounts.</td></tr>
+		}
+		else
+		{
+			foreach (ApplicationUser user in Model.Users)
+			{
+				<tr>
+					<td>@user.UserName</td>
+					<td>
+						@foreach (string roleName in user.RoleNames)
+						{
+							<div>@roleName</div>
+						}
+					</td>
+					<td>
+						<form asp-action="Delete" method="post" asp-route-id="@user.Id">
+							<button type="submit" class="btn btn-danger">Delete User</button>
+						</form>
+					</td>
+					<td>
+						@foreach (var role in Model.Roles)
+						{
+							if(user.UserName == User.Identity!.Name && role.Name == "Admin")
+								continue;
+							if (!user.RoleNames.Contains(role.Name))
+							{
+								<form asp-action="AddToRole" method="post" asp-route-userId="@user.Id" asp-route-roleName="@role.Name">
+									<button type="submit" class="btn btn-outline-primary mb-1">Add to @role.Name</button>
+								</form>
+							}
+							else
+							{
+								<form asp-action="RemoveFromRole" method="post" asp-route-userId="@user.Id" asp-route-roleName="@role.Name">
+									<button type="submit" class="btn btn-outline-danger mb-1">Remove from @role.Name</button>
+								</form>
+							}
+						}
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
+</table>
+
+<h4 class="mt-5">Manage Roles</h4>
+<hr />
+<form asp-action="CreateRole" method="post">
+	<div class="row mt-1 mb-5 col-md-4 col-1">
+		<div class="input-group input-group-sm mb-3">
+			<span class="input-group-text">Role Name</span>
+			<input type="text" name="rolename" class="form-control form-control-sm" placeholder="Enter name" aria-label="Enter name" aria-describedby="BtnCreateRole">
+			<button class="btn btn-outline-primary" type="submit" id="BtnCreateRole">Create Role</button>
+		</div>
+	</div>
+</form>
+@if (Model.Roles.All(role => role.NormalizedName != "ADMIN"))
+{
+	<form method="post" asp-action="CreateAdminRole">
+		<button type="submit" class="btn btn-outline-info">Create Admin Role</button>
+	</form>
+}
+else
+{
+	<table class="table table-bordered table-striped table-sm">
+		<thead>
+			<tr>
+				<th>
+					Role
+				</th>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var role in Model.Roles)
+			{
+				<tr>
+					<td>@role.Name</td>
+					<td>
+						<form asp-action="DeleteRole" method="post" asp-route-id="@role.Id">
+							<button type="submit" class="btn btn-danger">Delete Role</button>
+						</form>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

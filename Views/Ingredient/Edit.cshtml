@@ -1,0 +1,22 @@
+﻿@model Ingredient
+@{
+	ViewBag.Title = $"Edit {Model.Name} Ingredient";
+}
+
+<h3 class="mb-5">Edit Ingredient</h3>
+<div class="row">
+	<div class="col-md-4">
+		<form asp-action="Edit" method="post">
+			<input type="hidden" asp-for="IngredientId" />
+			<div class="form-floating mb-3">
+				<input asp-for="Name" class="form-control" placeholder="Enter Ingredient Name" />
+				<label asp-for="Name"></label>
+				<span asp-validation-for="Name" class="text-danger"></span>
+			</div>
+			<div class="form-group mb-3">
+				<input type="submit" value="Save" class="btn btn-primary" />
+				<a asp-action="Index" class="btn btn-warning">Back to List</a>
+			</div>
+		</form>
+	</div>
+</div>
